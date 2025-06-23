@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "transcript-minutes-api2"
+version = "0.1.0"
+description = "Transcript to Meeting Minutes API"
+authors = ["Devin AI <devin-ai-integration[bot]@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.104.0"
+uvicorn = "^0.24.0"
+pydantic = {extras = ["email"], version = "^2.5.0"}
+python-jose = "^3.3.0"
+passlib = "^1.7.4"
+bcrypt = "^4.1.0"
+openai = "^1.3.0"
+python-dotenv = "^1.0.0"
+sqlalchemy = "^2.0.0"
+python-multipart = "^0.0.6"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

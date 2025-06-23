@@ -1,0 +1,5 @@
+2025-06-23 08:44:36,806 - transcript_minutes_api - INFO - Starting up Transcript Minutes API...
+2025-06-23 08:44:36,824 - transcript_minutes_api - INFO - Database tables created successfully
+2025-06-23 08:44:38,693 - transcript_minutes_api - INFO - User registration attempt for username: testuser
+2025-06-23 08:44:38,994 - transcript_minutes_api - INFO - API Call - Endpoint: /auth/register, User: 1, Duration: 0.3007373809814453s
+2025-06-23 08:44:38,994 - transcript_minutes_api - INFO - User registered successfully: testuser
