@@ -39,8 +39,22 @@ OPENAI_API_KEY=your-openai-api-key-here
 # JWT設定（本番環境では変更必須）
 SECRET_KEY=your-secret-key-here-change-in-production
 
+# Microsoft Graph設定（Graph API使用時）
+GRAPH_TENANT_ID=your_tenant_id_here
+GRAPH_CLIENT_ID=your_client_id_here
+GRAPH_CLIENT_SECRET=your_client_secret_here
+
 # その他の設定は必要に応じて調整
 ```
+
+### Microsoft Graph設定
+
+Microsoft Graph APIを使用するには、Azure ADでアプリケーションを登録し、以下の権限を付与する必要があります：
+
+- `OnlineMeetingTranscript.Read.All` (Application permission)
+- `OnlineMeeting.Read.All` (Application permission)
+
+詳細な設定手順については、[Microsoft Graph認証ドキュメント](https://docs.microsoft.com/en-us/graph/auth/)を参照してください。
 
 ### 3. アプリケーションの起動
 
@@ -69,6 +83,12 @@ poetry run uvicorn app.main:app --reload
 ### ユーザー
 - `GET /users/profile` - プロフィール取得
 - `PUT /users/profile` - プロフィール更新
+
+### Microsoft Graph
+- `GET /graph/meetings/{user_id}` - ユーザーの会議一覧取得
+- `GET /graph/meetings/{user_id}/{meeting_id}/transcripts` - 会議のトランスクリプト一覧取得
+- `GET /graph/meetings/{user_id}/{meeting_id}/transcripts/{transcript_id}/content` - トランスクリプト内容取得
+- `POST /graph/minutes/generate` - Graph APIから議事録生成
 
 ## API ドキュメント
 
@@ -102,7 +122,7 @@ curl -X POST "http://localhost:8000/auth/login" \
   }'
 ```
 
-### 3. 議事録生成
+### 3. 議事録生成（手動入力）
 
 ```bash
 curl -X POST "http://localhost:8000/minutes/generate" \
@@ -111,6 +131,43 @@ curl -X POST "http://localhost:8000/minutes/generate" \
   -d '{
     "transcript": "今日の会議では新しいプロジェクトについて話し合いました...",
     "title": "プロジェクト企画会議"
+  }'
+```
+
+### 4. Microsoft Graph API使用例
+
+#### 4.1 ユーザーの会議一覧取得
+
+```bash
+curl -X GET "http://localhost:8000/graph/meetings/{user_id}" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+#### 4.2 会議のトランスクリプト一覧取得
+
+```bash
+curl -X GET "http://localhost:8000/graph/meetings/{user_id}/{meeting_id}/transcripts" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+#### 4.3 トランスクリプト内容取得
+
+```bash
+curl -X GET "http://localhost:8000/graph/meetings/{user_id}/{meeting_id}/transcripts/{transcript_id}/content" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+#### 4.4 Graph APIから議事録生成
+
+```bash
+curl -X POST "http://localhost:8000/graph/minutes/generate" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -d '{
+    "user_id": "graph_user_id",
+    "meeting_id": "meeting_id",
+    "transcript_id": "transcript_id",
+    "title": "Teams会議議事録"
   }'
 ```
 
@@ -123,16 +180,19 @@ transcript_minutes_api2/
 │   ├── routers/               # APIルーター
 │   │   ├── auth.py           # 認証エンドポイント
 │   │   ├── minutes.py        # 議事録エンドポイント
-│   │   └── users.py          # ユーザーエンドポイント
+│   │   ├── users.py          # ユーザーエンドポイント
+│   │   └── graph.py          # Microsoft Graph エンドポイント
 │   ├── modules/              # ビジネスロジック
 │   │   ├── auth_handler.py   # JWT認証処理
 │   │   ├── database.py       # データベース操作
 │   │   ├── logger.py         # ログ機能
-│   │   └── openai_client.py  # OpenAI連携
+│   │   ├── openai_client.py  # OpenAI連携
+│   │   └── graph_client.py   # Microsoft Graph連携
 │   └── schemas/              # Pydanticスキーマ
 │       ├── auth.py           # 認証スキーマ
 │       ├── minutes.py        # 議事録スキーマ
-│       └── users.py          # ユーザースキーマ
+│       ├── users.py          # ユーザースキーマ
+│       └── graph.py          # Microsoft Graphスキーマ
 ├── .env                      # 環境変数
 ├── pyproject.toml           # 依存関係
 └── README.md

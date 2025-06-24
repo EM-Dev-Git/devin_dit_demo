@@ -17,6 +17,8 @@ openai = "^1.3.0"
 python-dotenv = "^1.0.0"
 sqlalchemy = "^2.0.0"
 python-multipart = "^0.0.6"
+msgraph-sdk = "^1.34.0"
+azure-identity = "^1.15.0"
 
 [build-system]
 requires = ["poetry-core"]

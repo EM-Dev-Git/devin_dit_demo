@@ -3,3 +3,5 @@
 2025-06-23 08:44:38,693 - transcript_minutes_api - INFO - User registration attempt for username: testuser
 2025-06-23 08:44:38,994 - transcript_minutes_api - INFO - API Call - Endpoint: /auth/register, User: 1, Duration: 0.3007373809814453s
 2025-06-23 08:44:38,994 - transcript_minutes_api - INFO - User registered successfully: testuser
+2025-06-24 02:20:43,076 - transcript_minutes_api - ERROR - Failed to initialize Graph client: Invalid tenant ID provided. You can locate your tenant ID by following the instructions here: https://learn.microsoft.com/partner-center/find-ids-and-domain-names
+2025-06-24 02:20:44,751 - transcript_minutes_api - ERROR - Failed to initialize Graph client: Invalid tenant ID provided. You can locate your tenant ID by following the instructions here: https://learn.microsoft.com/partner-center/find-ids-and-domain-names
