@@ -3,19 +3,19 @@ from typing import List, Optional
 
 class MeetingInfo(BaseModel):
     id: str
-    subject: Optional[str]
-    start_time: Optional[str]
-    end_time: Optional[str]
-    join_url: Optional[str]
+    subject: Optional[str] = None
+    start_time: Optional[str] = None
+    end_time: Optional[str] = None
+    join_url: Optional[str] = None
 
 class MeetingListResponse(BaseModel):
     meetings: List[MeetingInfo]
     
 class TranscriptInfo(BaseModel):
     id: str
-    created_date_time: Optional[str]
-    end_date_time: Optional[str]
-    content_url: Optional[str]
+    created_date_time: Optional[str] = None
+    end_date_time: Optional[str] = None
+    content_url: Optional[str] = None
 
 class TranscriptListResponse(BaseModel):
     transcripts: List[TranscriptInfo]
