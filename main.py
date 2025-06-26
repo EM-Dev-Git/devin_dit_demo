@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 from modules.database import create_tables
 from modules.logger import setup_logging
-from routers import auth, minutes, users
+from routers import auth, minutes, users, graph
 
 load_dotenv()
 
@@ -33,6 +33,7 @@ app.add_middleware(
 app.include_router(auth.router, prefix="/auth", tags=["authentication"])
 app.include_router(minutes.router, prefix="/minutes", tags=["minutes"])
 app.include_router(users.router, prefix="/users", tags=["users"])
+app.include_router(graph.router, prefix="/graph", tags=["microsoft-graph"])
 
 @app.get("/")
 async def root():

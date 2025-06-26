@@ -3,15 +3,18 @@ from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from datetime import timedelta
 import time
+import uuid
 
 from modules.database import get_db, User
 from modules.auth import (
     authenticate_user, create_access_token, create_refresh_token,
     get_password_hash, verify_token, get_current_user
 )
+from modules.graph_client import GraphClient
 from modules.logger import log_request, get_logger
 from schemas.auth import Token, RefreshTokenRequest
 from schemas.users import UserCreate, UserLogin, User as UserSchema
+from schemas.graph import GraphAuthRequest, GraphAuthResponse, GraphCallbackRequest, GraphTokenStatus
 
 router = APIRouter()
 logger = get_logger(__name__)
@@ -118,3 +121,89 @@ async def get_current_user_info(current_user: User = Depends(get_current_user)):
     processing_time = time.time() - start_time
     log_request("/auth/me", current_user.id, processing_time)
     return current_user
+
+@router.post("/graph/authorize", response_model=GraphAuthResponse)
+async def initiate_graph_auth(
+    request: GraphAuthRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    start_time = time.time()
+    
+    try:
+        graph_client = GraphClient()
+        state = request.state or str(uuid.uuid4())
+        auth_url = graph_client.get_authorization_url(state)
+        
+        processing_time = time.time() - start_time
+        log_request("/auth/graph/authorize", current_user.id, processing_time)
+        logger.info(f"Generated Graph auth URL for user {current_user.id}")
+        
+        return GraphAuthResponse(auth_url=auth_url, state=state)
+        
+    except ValueError as e:
+        logger.error(f"Graph configuration error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Microsoft Graph service not configured properly"
+        )
+    except Exception as e:
+        logger.error(f"Error generating Graph auth URL: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to generate authorization URL"
+        )
+
+@router.post("/graph/callback")
+async def handle_graph_callback(
+    request: GraphCallbackRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    start_time = time.time()
+    
+    try:
+        graph_client = GraphClient()
+        token_data = graph_client.exchange_code_for_tokens(request.code)
+        
+        current_user.graph_access_token = token_data["access_token"]
+        current_user.graph_refresh_token = token_data.get("refresh_token")
+        current_user.graph_token_expires_at = token_data["expires_at"]
+        
+        db.commit()
+        
+        processing_time = time.time() - start_time
+        log_request("/auth/graph/callback", current_user.id, processing_time)
+        logger.info(f"Successfully stored Graph tokens for user {current_user.id}")
+        
+        return {"message": "Microsoft Graph authorization successful"}
+        
+    except Exception as e:
+        logger.error(f"Error handling Graph callback: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Authorization failed: {str(e)}"
+        )
+
+@router.get("/graph/status", response_model=GraphTokenStatus)
+async def get_graph_token_status(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    start_time = time.time()
+    
+    is_authorized = bool(current_user.graph_access_token)
+    needs_reauth = False
+    
+    if is_authorized and current_user.graph_token_expires_at:
+        from datetime import datetime
+        needs_reauth = current_user.graph_token_expires_at <= datetime.utcnow()
+    
+    processing_time = time.time() - start_time
+    log_request("/auth/graph/status", current_user.id, processing_time)
+    
+    return GraphTokenStatus(
+        is_authorized=is_authorized,
+        expires_at=current_user.graph_token_expires_at,
+        needs_reauth=needs_reauth
+    )

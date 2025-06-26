@@ -21,6 +21,9 @@ class User(Base):
     password_hash = Column(String(255), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     is_active = Column(Boolean, default=True)
+    graph_access_token = Column(Text, nullable=True)
+    graph_refresh_token = Column(Text, nullable=True)
+    graph_token_expires_at = Column(DateTime, nullable=True)
     
     minutes = relationship("Minutes", back_populates="user")
 
