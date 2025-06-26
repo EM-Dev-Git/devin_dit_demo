@@ -1,10 +1,7 @@
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(__file__), 'コード実装'))
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+import os
 from dotenv import load_dotenv
 
 from modules.database import create_tables
