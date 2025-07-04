@@ -37,6 +37,8 @@ class Minutes(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    graph_meeting_id = Column(String(255), nullable=True)
+    graph_transcript_id = Column(String(255), nullable=True)
     
     user = relationship("User", back_populates="minutes")
     
