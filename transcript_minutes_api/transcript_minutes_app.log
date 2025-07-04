@@ -1,0 +1,16 @@
+2025-07-04 02:34:51,484 - passlib.handlers.bcrypt - WARNING - (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/home/ubuntu/.pyenv/versions/3.12.8/lib/python3.12/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+              ^^^^^^^^^^^^^^^^^
+AttributeError: module 'bcrypt' has no attribute '__about__'
+2025-07-04 02:34:51,786 - request_logger - INFO - Request processed: {"timestamp": "2025-07-04T02:34:51.786569Z", "endpoint": "/auth/register", "user_id": 1, "processing_time": 0.3100779056549072}
+2025-07-04 02:34:51,786 - auth_logger - INFO - Auth event: {"timestamp": "2025-07-04T02:34:51.786805Z", "event_type": "register", "username": "testuser", "success": true}
+2025-07-04 02:34:51,786 - routers.auth - INFO - New user registered: testuser
+2025-07-04 02:34:52,180 - request_logger - INFO - Request processed: {"timestamp": "2025-07-04T02:34:52.180081Z", "endpoint": "/auth/login", "user_id": 1, "processing_time": 0.27404260635375977}
+2025-07-04 02:34:52,180 - auth_logger - INFO - Auth event: {"timestamp": "2025-07-04T02:34:52.180318Z", "event_type": "login", "username": "testuser", "success": true}
+2025-07-04 02:34:52,180 - routers.auth - INFO - User logged in: testuser
+2025-07-04 02:35:02,675 - modules.openai_client - WARNING - OpenAI API key not configured, using fallback parsing
+2025-07-04 02:35:02,682 - request_logger - INFO - Request processed: {"timestamp": "2025-07-04T02:35:02.682295Z", "endpoint": "/minutes/generate", "user_id": 1, "processing_time": 0.005907535552978516}
+2025-07-04 02:35:02,682 - routers.minutes - INFO - Minutes generated for user 1, meeting: テストミーティング
+2025-07-04 02:35:02,807 - request_logger - INFO - Request processed: {"timestamp": "2025-07-04T02:35:02.807761Z", "endpoint": "/minutes/", "user_id": 1, "processing_time": 0.0016067028045654297}
